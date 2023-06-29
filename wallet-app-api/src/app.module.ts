@@ -1,11 +1,18 @@
 // Nest
+import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+
+// External
+import { join } from 'path';
 
 // Internal
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { AccountsModule } from './accounts/accounts.module';
 
 @Module({
   imports: [
@@ -24,7 +31,15 @@ import { AuthModule } from './auth/auth.module';
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
     }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      // debug: false,
+      playground: false,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+    }),
     AuthModule,
+    AccountsModule,
   ],
   controllers: [],
   providers: [AppService],

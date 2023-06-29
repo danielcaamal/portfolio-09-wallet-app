@@ -1,0 +1,30 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Account {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Query {
+  accounts: [Account!]!
+  account(id: Int!): Account!
+}
+
+type Mutation {
+  createAccount(createAccountInput: CreateAccountInput!): Account!
+  updateAccount(updateAccountInput: UpdateAccountInput!): Account!
+  removeAccount(id: Int!): Account!
+}
+
+input CreateAccountInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateAccountInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
