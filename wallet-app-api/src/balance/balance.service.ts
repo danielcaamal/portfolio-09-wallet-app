@@ -1,5 +1,5 @@
 // Nest
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 // External
@@ -14,6 +14,7 @@ import {
 import { Balance } from './entities';
 import { BaseFindAllDto, PaginationDto } from 'src/common';
 import { ResponsePaginationBalanceDto } from './dto/paginate-balance.output';
+import { User } from 'src/auth/entities';
 
 @Injectable()
 export class BalanceService {
@@ -24,10 +25,15 @@ export class BalanceService {
     //
   }
 
-  create = async (createInput: CreateBalanceInput): Promise<Balance> => {
+  create = async (
+    createInput: CreateBalanceInput,
+    user?: User,
+  ): Promise<Balance> => {
+    const userId = createInput.userId || user?.id;
+    if (!userId) throw new BadRequestException('User id is required');
     const newEntity = this.repository.create({
       ...createInput,
-      user: { id: createInput.userId },
+      user: { id: userId },
     });
     return await this.repository.save(newEntity);
   };
@@ -95,17 +101,29 @@ export class BalanceService {
   update = async (
     id: string,
     updateBalanceInput: UpdateBalanceInput,
+    user?: User,
   ): Promise<Balance> => {
+    if (updateBalanceInput.userId) {
+      throw new BadRequestException('userId cannot be updated');
+    }
     const updateEntity = await this.repository.preload({
       id,
       ...updateBalanceInput,
     });
+    if (!updateEntity) throw new BadRequestException('Balance not found');
+    if (updateEntity.user.id !== user?.id) {
+      throw new BadRequestException('You cannot update this balance');
+    }
     updateEntity.updatedAt = new Date();
     return this.repository.save(updateEntity);
   };
 
-  remove = async (id: string): Promise<Balance> => {
+  remove = async (id: string, user?: User): Promise<Balance> => {
     const entityToDelete = await this.repository.findOneBy({ id });
+    if (!entityToDelete) throw new BadRequestException('Balance not found');
+    if (entityToDelete.user.id !== user?.id) {
+      throw new BadRequestException('You cannot delete this balance');
+    }
     entityToDelete.isDeleted = true;
     return await this.repository.save(entityToDelete);
   };

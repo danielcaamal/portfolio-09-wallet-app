@@ -126,7 +126,7 @@ input CreateBalanceInput {
   amount: Float!
 
   """User id"""
-  userId: String!
+  userId: String
 }
 
 input UpdateBalanceInput {

@@ -1,5 +1,5 @@
 import { Field, Float, InputType } from '@nestjs/graphql';
-import { IsNumber, IsUUID } from 'class-validator';
+import { IsNumber, IsOptional, IsUUID } from 'class-validator';
 
 import { CreateBaseInput } from 'src/common/dtos/create-base.input';
 
@@ -9,7 +9,8 @@ export class CreateBalanceInput extends CreateBaseInput {
   @Field(() => Float, { description: 'Balance amount total' })
   amount: number;
 
+  @IsOptional()
   @IsUUID()
-  @Field(() => String, { description: 'User id' })
-  userId: string;
+  @Field(() => String, { description: 'User id', nullable: true })
+  userId?: string;
 }
