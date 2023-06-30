@@ -51,6 +51,10 @@ export class FilterBalanceInput extends PartialType(CreateBalanceInput) {
         );
       }
 
+      if (input.userId) {
+        qb = qb.andWhere('user.id = :userId', { userId: input.userId });
+      }
+
       return qb;
     });
   };

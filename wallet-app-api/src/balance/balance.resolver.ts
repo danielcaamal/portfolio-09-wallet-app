@@ -14,7 +14,7 @@ import {
   ResponsePaginationBalanceDto,
 } from './dto';
 
-@AuthGpl()
+// @AuthGpl()
 @Resolver(() => Balance)
 export class BalanceResolver {
   constructor(private readonly balanceService: BalanceService) {}

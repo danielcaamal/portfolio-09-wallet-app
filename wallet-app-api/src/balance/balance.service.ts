@@ -25,7 +25,10 @@ export class BalanceService {
   }
 
   create = async (createInput: CreateBalanceInput): Promise<Balance> => {
-    const newEntity = this.repository.create(createInput);
+    const newEntity = this.repository.create({
+      ...createInput,
+      user: { id: createInput.userId },
+    });
     return await this.repository.save(newEntity);
   };
 
@@ -37,7 +40,9 @@ export class BalanceService {
     order,
   }: BaseFindAllDto<FilterBalanceInput>): Promise<Balance[] | number> => {
     const filter = FilterBalanceInput.getFilter(filterDto) || {};
-    let query = this.repository.createQueryBuilder('balance');
+    let query = this.repository
+      .createQueryBuilder('balance')
+      .leftJoinAndSelect('balance.user', 'user');
 
     if (filterDto) {
       query = query.where(filter);

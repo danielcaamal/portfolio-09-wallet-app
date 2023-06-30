@@ -15,14 +15,37 @@ type Balance {
   """When this balance was last updated"""
   updatedAt: DateTime
 
-  """Example field (placeholder)"""
+  """Amount of money"""
   amount: Float!
+
+  """User relation"""
+  user: User!
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type User {
+  """User unique identifier"""
+  id: String!
+
+  """User email"""
+  email: String!
+
+  """User password"""
+  password: String!
+
+  """User full name"""
+  fullName: String!
+
+  """Is this user active?"""
+  active: Boolean!
+
+  """User balances"""
+  balances: [Balance!]!
+}
 
 type ResponsePaginationBalanceDto {
   """Total records"""
@@ -62,6 +85,9 @@ input FilterBalanceInput {
   """Balance amount total"""
   amount: Float
 
+  """User id"""
+  userId: String
+
   """Balance amount total (from)"""
   amountFrom: Float
 
@@ -98,6 +124,9 @@ input CreateBalanceInput {
 
   """Balance amount total"""
   amount: Float!
+
+  """User id"""
+  userId: String!
 }
 
 input UpdateBalanceInput {
@@ -114,4 +143,7 @@ input UpdateBalanceInput {
 
   """Balance amount total"""
   amount: Float
+
+  """User id"""
+  userId: String
 }
