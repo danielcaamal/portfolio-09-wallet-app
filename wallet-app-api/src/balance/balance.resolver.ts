@@ -3,6 +3,7 @@ import { ParseUUIDPipe } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 
 // Local
+import { AuthGpl } from 'src/auth/decorators';
 import { Balance } from './entities/balance.entity';
 import { BalanceService } from './balance.service';
 import { PaginationDto } from 'src/common';
@@ -13,6 +14,7 @@ import {
   ResponsePaginationBalanceDto,
 } from './dto';
 
+@AuthGpl()
 @Resolver(() => Balance)
 export class BalanceResolver {
   constructor(private readonly balanceService: BalanceService) {}
