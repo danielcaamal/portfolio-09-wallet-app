@@ -1,12 +1,21 @@
+// Nest
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 
+// External
+import { IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+
+@InputType()
 export class PaginationDto {
   @ApiProperty({ required: false, type: Number, default: 1 })
   @Type(() => Number)
   @IsNumber()
   @IsOptional()
+  @Field(() => Number, {
+    description: 'Page number',
+    nullable: true,
+  })
   page?: number;
 
   @ApiProperty({ required: false, type: Number, default: 100 })
@@ -15,18 +24,40 @@ export class PaginationDto {
   @Min(1)
   @Max(1000)
   @IsOptional()
+  @Field(() => Number, {
+    description: 'Records By Page',
+    nullable: true,
+  })
   recordsByPage?: number;
 }
 
-export class ResponsePaginationDto<T> extends PaginationDto {
+@ObjectType()
+export abstract class ResponsePaginationDto<T> extends PaginationDto {
+  @Field(() => Number, {
+    description: 'Total records',
+    nullable: true,
+  })
   totalRecords? = 0;
+
+  @Field(() => Number, {
+    description: 'Total pages',
+    nullable: true,
+  })
   totalPages? = 0;
+
+  @Field(() => Number, {
+    description: 'Page number',
+    nullable: true,
+  })
   page? = 1;
+
+  @Field(() => Number, {
+    description: 'Records By Page',
+    nullable: true,
+  })
   recordsByPage? = 100;
-  data?: T[] = [];
-  detail?: T;
-  status?: number;
-  message?: string;
+
+  data?: T[];
 
   constructor(paginationDto?: PaginationDto) {
     super();
@@ -50,15 +81,10 @@ export class ResponsePaginationDto<T> extends PaginationDto {
     this.data = data;
   }
 
-  setDetail(detail: T) {
-    this.detail = detail;
-  }
-
-  setStatus(status: number) {
-    this.status = status;
-  }
-
-  setMessage(message: string) {
-    this.message = message;
+  setOnlyData(data: T[]) {
+    this.data = data;
+    this.page = 1;
+    this.totalPages = 1;
+    this.totalRecords = data.length;
   }
 }

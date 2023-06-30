@@ -2,29 +2,116 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Account {
+type Balance {
+  """Unique identifier"""
+  id: String!
+
+  """Is this balance deleted?"""
+  isDeleted: Boolean!
+
+  """When this balance was created"""
+  createdAt: DateTime!
+
+  """When this balance was last updated"""
+  updatedAt: DateTime
+
   """Example field (placeholder)"""
-  exampleField: Int!
+  amount: Float!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ResponsePaginationBalanceDto {
+  """Total records"""
+  totalRecords: Float
+
+  """Total pages"""
+  totalPages: Float
+
+  """Page number"""
+  page: Float
+
+  """Records By Page"""
+  recordsByPage: Float
+
+  """Total records"""
+  data: [Balance!]
 }
 
 type Query {
-  accounts: [Account!]!
-  account(id: Int!): Account!
+  balances(filter: FilterBalanceInput, pagination: PaginationDto): ResponsePaginationBalanceDto!
+  balance(id: String!): Balance!
+}
+
+input FilterBalanceInput {
+  """Unique identifier"""
+  id: String
+
+  """Is this balance deleted?"""
+  isDeleted: Boolean
+
+  """When this balance was created"""
+  createdAt: DateTime
+
+  """When this balance was last updated"""
+  updatedAt: DateTime
+
+  """Balance amount total"""
+  amount: Float
+
+  """Balance amount total (from)"""
+  amountFrom: Float
+
+  """Balance created at (from)"""
+  createdAtFrom: DateTime
+}
+
+input PaginationDto {
+  """Page number"""
+  page: Float
+
+  """Records By Page"""
+  recordsByPage: Float
 }
 
 type Mutation {
-  createAccount(createAccountInput: CreateAccountInput!): Account!
-  updateAccount(updateAccountInput: UpdateAccountInput!): Account!
-  removeAccount(id: Int!): Account!
+  createBalance(createBalanceInput: CreateBalanceInput!): Balance!
+  updateBalance(updateBalanceInput: UpdateBalanceInput!): Balance!
+  removeBalance(id: String!): Balance!
 }
 
-input CreateAccountInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input CreateBalanceInput {
+  """Unique identifier"""
+  id: String
+
+  """Is this balance deleted?"""
+  isDeleted: Boolean
+
+  """When this balance was created"""
+  createdAt: DateTime
+
+  """When this balance was last updated"""
+  updatedAt: DateTime
+
+  """Balance amount total"""
+  amount: Float!
 }
 
-input UpdateAccountInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+input UpdateBalanceInput {
+  id: String!
+
+  """Is this balance deleted?"""
+  isDeleted: Boolean
+
+  """When this balance was created"""
+  createdAt: DateTime
+
+  """When this balance was last updated"""
+  updatedAt: DateTime
+
+  """Balance amount total"""
+  amount: Float
 }

@@ -12,7 +12,7 @@ import { join } from 'path';
 // Internal
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { AccountsModule } from './accounts/accounts.module';
+import { BalanceModule } from './balance/balance.module';
 
 @Module({
   imports: [
@@ -39,7 +39,7 @@ import { AccountsModule } from './accounts/accounts.module';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     AuthModule,
-    AccountsModule,
+    BalanceModule,
   ],
   controllers: [],
   providers: [AppService],
