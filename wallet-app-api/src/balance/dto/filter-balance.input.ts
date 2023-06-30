@@ -2,13 +2,12 @@
 import { Field, Float, InputType, PartialType } from '@nestjs/graphql';
 
 // External
-import { FindManyOptions, Between } from 'typeorm';
+import { Brackets } from 'typeorm';
 import { IsDate, IsNumber, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 // Local
 import { CreateBalanceInput } from './create-balance.input';
-import { Balance } from '../entities';
 
 @InputType()
 export class FilterBalanceInput extends PartialType(CreateBalanceInput) {
@@ -29,29 +28,30 @@ export class FilterBalanceInput extends PartialType(CreateBalanceInput) {
   })
   createdAtFrom?: Date;
 
-  static getFilter = (
-    input?: FilterBalanceInput,
-  ): FindManyOptions<Balance> | undefined => {
+  static getFilter = (input?: FilterBalanceInput): Brackets | undefined => {
     if (!input) return undefined;
-    return {
-      where: [
-        // Default
-        {
-          // id: input.id,
-          // amount: input.amount,
-          // isDeleted: input.isDeleted,
-          createdAt: Between(
-            new Date(input.createdAt),
-            new Date(input.createdAt),
-          ),
-          // updatedAt: input.updatedAt,
-        },
-        // Custom
-        // {
-        //   amount: MoreThanOrEqual(input.amountFrom),
-        //   createdAt: MoreThanOrEqual(input.createdAtFrom),
-        // },
-      ],
-    };
+    return new Brackets((qb) => {
+      if (input.amount) {
+        qb = qb.andWhere('balance.amount = :amount', { amount: input.amount });
+      }
+
+      if (input.isDeleted !== undefined) {
+        qb = qb.andWhere('balance.isDeleted = :isDeleted', {
+          isDeleted: input.isDeleted,
+        });
+      }
+
+      if (input.createdAt) {
+        const formattedCreatedAt = input.createdAt.toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD' format
+        qb = qb.andWhere(
+          `TO_CHAR(balance.createdAt AT TIME ZONE 'UTC', 'YYYY-MM-DD') = :createdAt`,
+          {
+            createdAt: formattedCreatedAt,
+          },
+        );
+      }
+
+      return qb;
+    });
   };
 }

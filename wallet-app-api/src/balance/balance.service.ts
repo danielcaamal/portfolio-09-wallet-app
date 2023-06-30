@@ -34,9 +34,14 @@ export class BalanceService {
     recordsByPage,
     isCounter,
     skip,
+    order,
   }: BaseFindAllDto<FilterBalanceInput>): Promise<Balance[] | number> => {
     const filter = FilterBalanceInput.getFilter(filterDto) || {};
-    let query = this.repository.createQueryBuilder();
+    let query = this.repository.createQueryBuilder('balance');
+
+    if (filterDto) {
+      query = query.where(filter);
+    }
 
     if (recordsByPage) {
       query = query.take(recordsByPage);
@@ -44,6 +49,12 @@ export class BalanceService {
 
     if (skip) {
       query = query.skip(skip);
+    }
+
+    if (order) {
+      query = query.orderBy({
+        id: 'ASC',
+      });
     }
 
     if (isCounter) {
@@ -59,8 +70,9 @@ export class BalanceService {
   ): Promise<ResponsePaginationBalanceDto> => {
     const response = new ResponsePaginationBalanceDto(paginationDto);
     if (paginationDto) {
+      const { skip, recordsByPage } = response;
       const [data, totalRecords] = await Promise.all([
-        this.findAll({ filterDto }),
+        this.findAll({ filterDto, recordsByPage, skip }),
         this.findAll({ filterDto, isCounter: true }),
       ]);
       response.setTotalPagesAndData(totalRecords as number, data as Balance[]);
