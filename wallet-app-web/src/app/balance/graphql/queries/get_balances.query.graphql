@@ -1,0 +1,15 @@
+query GetBalances {
+  balances {
+    totalRecords
+    totalPages
+    page
+    recordsByPage
+    data {
+      id
+      isDeleted
+      createdAt
+      updatedAt
+      amount
+    }
+  }
+}
